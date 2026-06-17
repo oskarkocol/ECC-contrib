@@ -71,9 +71,9 @@ function readHarnessCost(sessionId, maxAgeSeconds) {
 // Approximate per-1M-token billing rates (USD).
 // Cache creation: 1.25x input rate. Cache read: 0.1x input rate.
 const RATE_TABLE = {
-  haiku:  { in: 0.80,  out: 4.0,  cacheWrite: 1.00,  cacheRead: 0.08 },
+  haiku:  { in: 1.00,  out: 5.0,  cacheWrite: 1.25,  cacheRead: 0.10 },
   sonnet: { in: 3.00,  out: 15.0, cacheWrite: 3.75,  cacheRead: 0.30 },
-  opus:   { in: 15.00, out: 75.0, cacheWrite: 18.75, cacheRead: 1.50 }
+  opus:   { in: 5.00,  out: 25.0, cacheWrite: 6.25,  cacheRead: 0.50 }
 };
 
 function getRates(model) {
