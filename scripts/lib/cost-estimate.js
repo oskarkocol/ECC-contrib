@@ -7,9 +7,9 @@
  */
 
 const RATE_TABLE = {
-  haiku: { in: 0.8, out: 4.0 },
+  haiku: { in: 1.0, out: 5.0 },
   sonnet: { in: 3.0, out: 15.0 },
-  opus: { in: 15.0, out: 75.0 }
+  opus: { in: 5.0, out: 25.0 }
 };
 
 /**
