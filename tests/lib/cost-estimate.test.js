@@ -50,9 +50,9 @@ function runTests() {
   console.log('\nestimateCost:');
 
   if (
-    test('opus 1M/1M tokens returns 90', () => {
+    test('opus 1M/1M tokens returns 30', () => {
       const cost = estimateCost('opus', 1_000_000, 1_000_000);
-      assert.strictEqual(cost, 90);
+      assert.strictEqual(cost, 30);
     })
   )
     passed++;
@@ -68,9 +68,9 @@ function runTests() {
   else failed++;
 
   if (
-    test('haiku 1M/1M tokens returns 4.8', () => {
+    test('haiku 1M/1M tokens returns 6', () => {
       const cost = estimateCost('haiku', 1_000_000, 1_000_000);
-      assert.strictEqual(cost, 4.8);
+      assert.strictEqual(cost, 6);
     })
   )
     passed++;
@@ -88,8 +88,8 @@ function runTests() {
   if (
     test('full model name claude-opus-4-6 uses opus rates', () => {
       const cost = estimateCost('claude-opus-4-6', 500, 200);
-      // (500 / 1_000_000) * 15 + (200 / 1_000_000) * 75 = 0.0075 + 0.015 = 0.0225
-      const expected = Math.round(0.0225 * 1e6) / 1e6;
+      // (500 / 1_000_000) * 5 + (200 / 1_000_000) * 25 = 0.0025 + 0.005 = 0.0075
+      const expected = Math.round(0.0075 * 1e6) / 1e6;
       assert.strictEqual(cost, expected);
     })
   )
