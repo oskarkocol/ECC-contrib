@@ -93,7 +93,9 @@ const RATE_TABLE = {
   opus:       { in: 5.00,  out: 25.0, cacheWrite: 6.25,  cacheRead: 0.50 },
   opus55:     { in: 4.00,  out: 20.0, cacheWrite: 5.00, cacheRead: 0.20 },
   opusLegacy: { in: 15.00, out: 75.0, cacheWrite: 18.75, cacheRead: 1.50 },
-  fable:      { in: 10.00, out: 50.0, cacheWrite: 12.50, cacheRead: 1.00 }
+  fable:      { in: 10.00, out: 50.0, cacheWrite: 12.50, cacheRead: 1.00 },
+  // Fable 5.1 keeps list input/output but halves cache reads vs Fable 5.
+  fable51:    { in: 10.00, out: 50.0, cacheWrite: 12.50, cacheRead: 0.25 }
 };
 
 // Opus 4.0's dated snapshot omits the minor segment, so an `opus-4-0`
@@ -102,6 +104,7 @@ const LEGACY_OPUS_RE = /3-opus|opus-4-0(?!\d)|opus-4-1(?!\d)|opus-4[-@]\d{8}/;
 
 function getRates(model, usage = {}) {
   const m = String(model || '').toLowerCase();
+  if (/(?:^|[^a-z0-9])fable-5-1(?:[^a-z0-9]|$)/.test(m)) return RATE_TABLE.fable51;
   if (m.includes('fable') || m.includes('mythos')) return RATE_TABLE.fable;
   if (/(?:^|[^a-z0-9])haiku-5-5(?:[^a-z0-9]|$)/.test(m)) {
     const promptTokens = toNumber(usage.input_tokens) +
