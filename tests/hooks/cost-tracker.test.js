@@ -746,6 +746,14 @@ function runTests() {
     assert.strictEqual(priceMessages([
       message('claude-haiku-5-5', 1000, 1000), message('claude-opus-5-5', 1000, 1000)
     ]).estimated_cost_usd, 0.0246, 'each request retains its own model rates');
+    assert.strictEqual(priceMessages([{
+      model: 'claude-fable-5-1',
+      usage: { cache_read_input_tokens: 1_000_000 }
+    }]).estimated_cost_usd, 0.25, 'Fable 5.1 cache reads bill at $0.25 per 1M tokens');
+    assert.strictEqual(priceMessages([{
+      model: 'claude-fable-5',
+      usage: { cache_read_input_tokens: 1_000_000 }
+    }]).estimated_cost_usd, 1, 'Fable 5 cache reads bill at $1.00 per 1M tokens');
   }) ? passed++ : failed++);
 
   // 11. Ignores stale harness-cost cache and falls back to transcript estimate
