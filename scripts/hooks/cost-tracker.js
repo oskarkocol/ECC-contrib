@@ -78,7 +78,8 @@ function readHarnessCost(sessionId, maxAgeSeconds) {
 // Five-minute cache creation: 1.25x input rate. Cache read: usually 0.1x;
 // Opus/Sonnet 5.5 use 0.05x. The harness cost remains authoritative for 1h writes.
 // Source: https://platform.claude.com/docs/en/about-claude/pricing
-// Current-generation list prices: Fable/Mythos 5 $10/$50, Opus 5 and
+// Current-generation list prices: Fable/Mythos 5 $10/$50, Fable 5.1 $10/$50
+// with $0.25/M cache reads, Fable 5.2 $8/$40, Opus 5 and
 // Opus 4.5-4.8 $5/$25, Sonnet 5 $2/$10, Sonnet 4.6 $3/$15, and Haiku 4.5
 // $1/$5. Opus 4.0/4.1 and Opus 3 stay on the legacy $15/$75 tier.
 // Opus 5.5 is $4/$20; Haiku 5.5 is $0.10/$0.50 at <=100K prompt tokens
@@ -93,7 +94,11 @@ const RATE_TABLE = {
   opus:       { in: 5.00,  out: 25.0, cacheWrite: 6.25,  cacheRead: 0.50 },
   opus55:     { in: 4.00,  out: 20.0, cacheWrite: 5.00, cacheRead: 0.20 },
   opusLegacy: { in: 15.00, out: 75.0, cacheWrite: 18.75, cacheRead: 1.50 },
-  fable:      { in: 10.00, out: 50.0, cacheWrite: 12.50, cacheRead: 1.00 }
+  fable:      { in: 10.00, out: 50.0, cacheWrite: 12.50, cacheRead: 1.00 },
+  // Fable 5.1 keeps list input/output but halves cache reads vs Fable 5.
+  fable51:    { in: 10.00, out: 50.0, cacheWrite: 12.50, cacheRead: 0.25 },
+  // Fable 5.2 list prices: $8/$40 with lower cache tiers (Narev public catalog).
+  fable52:    { in: 8.00,  out: 40.0, cacheWrite: 10.00, cacheRead: 0.20 }
 };
 
 // Opus 4.0's dated snapshot omits the minor segment, so an `opus-4-0`
@@ -102,6 +107,8 @@ const LEGACY_OPUS_RE = /3-opus|opus-4-0(?!\d)|opus-4-1(?!\d)|opus-4[-@]\d{8}/;
 
 function getRates(model, usage = {}) {
   const m = String(model || '').toLowerCase();
+  if (/(?:^|[^a-z0-9])fable-5-2(?:[^a-z0-9]|$)/.test(m)) return RATE_TABLE.fable52;
+  if (/(?:^|[^a-z0-9])fable-5-1(?:[^a-z0-9]|$)/.test(m)) return RATE_TABLE.fable51;
   if (m.includes('fable') || m.includes('mythos')) return RATE_TABLE.fable;
   if (/(?:^|[^a-z0-9])haiku-5-5(?:[^a-z0-9]|$)/.test(m)) {
     const promptTokens = toNumber(usage.input_tokens) +
